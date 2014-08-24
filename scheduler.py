@@ -1,7 +1,6 @@
 # -*-coding: utf-8 -*-
 
 import sys
-import codecs
 import re
 import datetime
 from math import ceil
@@ -122,7 +121,7 @@ def find_max_length_of_tasks(tasks):
     return ret
 
 def parse(filepath, target_man=None):
-    f = codecs.open(filepath, 'r')
+    f = open(filepath, 'r')
     s = f.read()
     #print s
     lines = s.split('\n')
