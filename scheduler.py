@@ -6,7 +6,7 @@ import datetime
 from math import ceil
 
 class Task:
-    def __init__(self, name, man_day, man, status=0):
+    def __init__(self, name, man_day, man, project_start_date, status=0):
         """
         Arguments:
         - `self`:
@@ -17,18 +17,17 @@ class Task:
         self.man_day = man_day
         self.man = man
         self.status = int(status)
+        self.project_start_date = project_start_date
 
         self.start_point = None
 
     @property
     def start_date(self):
-        start_date = datetime.date(2014, 8, 26)
-        return add_days(start_date, self.start_point)
+        return add_days(self.project_start_date, self.start_point)
 
     @property
     def end_date(self):
-        start_date = datetime.date(2014, 8, 26)
-        return add_days(start_date, self.start_point + self.man_day, False)
+        return add_days(self.project_start_date, self.start_point + self.man_day, False)
 
 TASK_LINE_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]+\.?[0-9]?)\[(\S+)\](\(([0-9]+)%\))?"
 
@@ -120,7 +119,7 @@ def find_max_length_of_tasks(tasks):
 
     return ret
 
-def parse(filepath, target_man=None):
+def parse(filepath, project_start_date, target_man=None):
     f = open(filepath, 'r')
     s = f.read()
     #print s
@@ -138,7 +137,7 @@ def parse(filepath, target_man=None):
             status = 0
             if m.group(5):
                 status = m.group(5)
-            task = Task(task_name, man_day, man, status)
+            task = Task(task_name, man_day, man, project_start_date, status)
             tasks.append(task)
 
 
@@ -161,13 +160,15 @@ def parse(filepath, target_man=None):
         if not target_man or task.man == target_man:
             total_man_days += task.man_day
             pretty_print_task(task, max_len)
-            # pretty_print(task.name, task.man, task.man_day, task.start_date, task.end_date, max_len)
     
     pretty_print(' ', ' ', total_man_days, ' ', ' ', ' ', max_len)
-if __name__ == '__main__':
-    filepath = sys.argv[1]
-    man = None
-    if len(sys.argv) == 3:
-        man = sys.argv[2]
 
-    parse(filepath, man)
+if __name__ == '__main__':
+    project_start_date = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d').date()
+    filepath = sys.argv[2]
+    man = None
+    if len(sys.argv) == 4:
+        man = sys.argv[3]
+
+
+    parse(filepath, project_start_date, man)
