@@ -40,9 +40,6 @@ def skip_weekend(date1):
 
 
 def skip_vacation(man, date1, vacations):
-    if str(date1) == '2014-08-26':
-        pass
-
     if vacations.get(man) and vacations.get(man).count(str(date1)) > 0:
         date1 = date1 + datetime.timedelta(days=1)
         return True, date1
