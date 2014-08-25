@@ -1,6 +1,7 @@
 # -*-coding: utf-8 -*-
 
 import sys
+import getopt
 import re
 import datetime
 from math import ceil
@@ -199,12 +200,27 @@ def parse(filepath, project_start_date, target_man=None):
     
     pretty_print(' ', ' ', total_man_days, ' ', ' ', ' ', max_len)
 
-if __name__ == '__main__':
-    project_start_date = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d').date()
-    filepath = sys.argv[2]
-    man = None
-    if len(sys.argv) == 4:
-        man = sys.argv[3]
+def help():
+    print("scheduler.py -b <project_start_date> [-m <man>] /path/to/work-breakdown-file.markdown")
 
+if __name__ == '__main__':
+    opts, args = getopt.getopt(sys.argv[1:], 'b:m:')
+    if not args or len(args) != 1:
+        help()
+        exit(1)
+    
+    filepath = args[0]
+    project_start_date = None
+    man = None
+    for opt_name, opt_value in opts:
+        opt_value = opt_value.strip()
+        if opt_name == '-b':
+            project_start_date = parse_date(opt_value)
+        elif opt_name == '-m':
+            man = opt_value
+
+    if not project_start_date:
+        help()
+        exit(1)
 
     parse(filepath, project_start_date, man)
