@@ -27,7 +27,7 @@ class Task:
     def end_date(self, vacations):
         return add_days(self.man, self.project_start_date, vacations, self.start_point + self.man_day, False)
 
-TASK_LINE_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]+\.?[0-9]?)\[(\S+)\](\(([0-9]+)%\))?"
+TASK_LINE_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]+\.?[0-9]?)\s*\[(\S+)\](\(([0-9]+)%\))?"
 VACATION_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})"
 def skip_weekend(date1):
     weekday = date1.isoweekday()
