@@ -27,8 +27,8 @@ class Task:
     def end_date(self, vacations):
         return add_days(self.man, self.project_start_date, vacations, self.start_point + self.man_day, False)
 
-TASK_LINE_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]+\.?[0-9]?)\s*\[(\S+)\](\(([0-9]+)%\))?"
-VACATION_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})"
+TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*\[(.+)\](\(([0-9]+)%\))?"
+VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?"
 def skip_weekend(date1):
     weekday = date1.isoweekday()
     if weekday > 5:
@@ -138,10 +138,12 @@ def find_max_length_of_tasks(tasks):
 
     return ret
 
+def parse_date(input):
+    return datetime.datetime.strptime(input, '%Y-%m-%d').date()
+
 def parse(filepath, project_start_date, target_man=None):
     f = open(filepath, 'r')
     s = f.read()
-    #print s
     lines = s.split('\n')
     tasks = []
     vacations = {}
@@ -149,25 +151,31 @@ def parse(filepath, project_start_date, target_man=None):
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
-            task_name = m.group(1)
-            man_day = m.group(2)
+            task_name = m.group(1).strip()
+            man_day = m.group(2).strip()
             man_day = float(man_day)
-            man = m.group(3)
+            man = m.group(3).strip()
             status = 0
             if m.group(5):
-                status = m.group(5)
+                status = m.group(5).strip()
             task = Task(task_name, man_day, man, project_start_date, status)
             tasks.append(task)
         else:
             m = re.search(VACATION_PATTERN, line)
             if m:
+                man = m.group(1).strip()
+                vacation_date = parse_date(m.group(2).strip())
+                vacation_date_end = vacation_date
+                if m.group(4):
+                    vacation_date_end = parse_date(m.group(4).strip())
 
-                man = m.group(1)
-                vacation_date = m.group(2)
                 if not vacations.get(man):
                     vacations[man] = []
 
-                vacations[man].append(vacation_date)
+                xdate = vacation_date
+                while xdate <= vacation_date_end:
+                    vacations[man].append(str(xdate))
+                    xdate += datetime.timedelta(days=1)
 
     stat = {}
     for task in tasks:
