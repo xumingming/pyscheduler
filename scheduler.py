@@ -171,7 +171,6 @@ def parse(filepath, project_start_date, target_man=None):
                     vacations[man] = []
 
                 vacations[man].append(vacation_date)
-                print('vacations!!!!!!!!!!!!!!', vacations)
 
     stat = {}
     for task in tasks:
