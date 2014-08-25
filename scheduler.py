@@ -21,17 +21,35 @@ class Task:
 
         self.start_point = None
 
-    @property
-    def start_date(self):
-        return add_days(self.project_start_date, self.start_point)
+    def start_date(self, vacations):
+        return add_days(self.man, self.project_start_date, vacations, self.start_point)
 
-    @property
-    def end_date(self):
-        return add_days(self.project_start_date, self.start_point + self.man_day, False)
+    def end_date(self, vacations):
+        return add_days(self.man, self.project_start_date, vacations, self.start_point + self.man_day, False)
 
 TASK_LINE_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]+\.?[0-9]?)\[(\S+)\](\(([0-9]+)%\))?"
+VACATION_PATTERN = "\*\s*(\S+)\s*\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})"
+def skip_weekend(date1):
+    weekday = date1.isoweekday()
+    if weekday > 5:
+        padding_days = (7 - weekday) + 1
+        date1 = date1 + datetime.timedelta(days=padding_days)
+        return True, date1
+    else:
+        return False, date1
 
-def add_days(curr_day, days, is_start_date = True):
+
+def skip_vacation(man, date1, vacations):
+    if str(date1) == '2014-08-26':
+        pass
+
+    if vacations.get(man) and vacations.get(man).count(str(date1)) > 0:
+        date1 = date1 + datetime.timedelta(days=1)
+        return True, date1
+    else:
+        return False, date1
+
+def add_days(man, curr_day, vacations, days, is_start_date = True):
     idx = int(ceil(days))
     if idx > days:
         idx -= 1
@@ -42,16 +60,20 @@ def add_days(curr_day, days, is_start_date = True):
     ret = curr_day
     while idx > 0:
         ret = ret + datetime.timedelta(days=1)
-        weekday = ret.isoweekday()
-        if weekday > 5:
-            padding_days = (7 - weekday) + 1
-            ret = ret + datetime.timedelta(days=padding_days)
+
+        # skip the weekend and vacations
+        while True:
+            skipped, ret = skip_weekend(ret)
+            skipped, ret = skip_vacation(man, ret, vacations)
+            
+            if not skipped:
+                break
+
         idx -= 1
 
     return ret
 
 def schedule(tasks):
-    start_date = datetime.date(2014, 8, 26)
     curr_days = {}
     for task in tasks:
         if not curr_days.get(task.man):
@@ -106,10 +128,10 @@ def pretty_print(task_name, man, man_day, start_date, end_date, status, task_nam
     actual_end_date = format_with_width(str(end_date), END_DATE_LEN)
     actual_status = format_with_width(str(status), STATUS_LEN)
 
-    print("{} | {} | {} | {} -- {} | {}".format(actual_task_name, actual_man, actual_man_day, actual_start_date, actual_end_date, actual_status))
+    print("{} | {} | {} | {} | {} | {}".format(actual_task_name, actual_man, actual_man_day, actual_start_date, actual_end_date, actual_status))
 
-def pretty_print_task(task, task_name_len):
-    pretty_print(task.name, task.man, task.man_day, task.start_date, task.end_date, str(task.status) + "%", task_name_len)
+def pretty_print_task(task, vacations, task_name_len):
+    pretty_print(task.name, task.man, task.man_day, task.start_date(vacations), task.end_date(vacations), str(task.status) + "%", task_name_len)
 
 def find_max_length_of_tasks(tasks):
     ret = 0
@@ -125,7 +147,7 @@ def parse(filepath, project_start_date, target_man=None):
     #print s
     lines = s.split('\n')
     tasks = []
-
+    vacations = {}
 
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
@@ -139,7 +161,17 @@ def parse(filepath, project_start_date, target_man=None):
                 status = m.group(5)
             task = Task(task_name, man_day, man, project_start_date, status)
             tasks.append(task)
+        else:
+            m = re.search(VACATION_PATTERN, line)
+            if m:
 
+                man = m.group(1)
+                vacation_date = m.group(2)
+                if not vacations.get(man):
+                    vacations[man] = []
+
+                vacations[man].append(vacation_date)
+                print('vacations!!!!!!!!!!!!!!', vacations)
 
     stat = {}
     for task in tasks:
@@ -159,7 +191,7 @@ def parse(filepath, project_start_date, target_man=None):
     for task in tasks:
         if not target_man or task.man == target_man:
             total_man_days += task.man_day
-            pretty_print_task(task, max_len)
+            pretty_print_task(task, vacations, max_len)
     
     pretty_print(' ', ' ', total_man_days, ' ', ' ', ' ', max_len)
 
