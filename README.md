@@ -67,7 +67,7 @@ scheduler.py -b <project_start_date> [-m <man>] /path/to/work-breakdown-file.mar
 如果你想只看看所有分配给`James`的任务，那么加个参数即可:
 
 ```bash
-> ./scheduler.py -b -m James 2014-08-21 /tmp/test
+> ./scheduler.py -b 2014-08-21 -m James /tmp/test
 任务   | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
 ------ | ------ | -------- | ---------- | ---------- | ----
 任务一 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 100%
