@@ -74,6 +74,8 @@ scheduler.py -b <project_start_date> [-m <man>] /path/to/work-breakdown-file.mar
 任务三 | James  | 1.0      | 2014-08-25 | 2014-08-25 | 0%
 ```
 
+### 有人请假怎么办？
+
 做项目的过程中，人员难免请假，对于已经排好的计划怎么办？ 手工调整？不用，你只需要记录谁在哪天请假就好:
  
     * 任务一 -- 2[James](100%)
@@ -92,5 +94,6 @@ scheduler.py -b <project_start_date> [-m <man>] /path/to/work-breakdown-file.mar
 任务一 | James  | 2.0      | 2014-08-21 | 2014-08-25 | 100%
 任务三 | James  | 1.0      | 2014-08-26 | 2014-08-26 | 0%
 ```
+
 
 更多功能？Try it yourself!
