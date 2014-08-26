@@ -15,7 +15,7 @@ pyscheduler
 ### 基本用法
 
 ```bash
-scheduler.py -b <project_start_date> [-m <man>] /path/to/work-breakdown-file.markdown
+scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 ```
 
 这个软件的输入是一个`markdown` 文件, 你在这个 markdown 文件里面定义你的项目的任务细分，比如下面这段:
