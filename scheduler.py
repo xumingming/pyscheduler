@@ -8,7 +8,7 @@ import datetime
 from math import ceil
 
 class Task:
-    def __init__(self, name, man_day, man, project_start_date, status=0):
+    def __init__(self, name, man_day, man, status=0):
         """
         Arguments:
         - `self`:
@@ -19,18 +19,18 @@ class Task:
         self.man_day = man_day
         self.man = man
         self.status = int(status)
-        self.project_start_date = project_start_date
-
         self.start_point = None
 
-    def start_date(self, vacations):
-        return add_days(self.man, self.project_start_date, vacations, self.start_point)
+    def start_date(self, project_start_date, vacations):
+        return add_days(self.man, project_start_date, vacations, self.start_point)
 
-    def end_date(self, vacations):
-        return add_days(self.man, self.project_start_date, vacations, self.start_point + self.man_day, False)
+    def end_date(self, project_start_date, vacations):
+        return add_days(self.man, project_start_date, vacations, self.start_point + self.man_day, False)
 
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*\[(.+)\](\(([0-9]+)%\))?"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?"
+PROJECT_START_DATE_PATTERN = '项目开始时间\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
+
 def skip_weekend(date1):
     weekday = date1.isoweekday()
     if weekday > 5:
@@ -132,9 +132,9 @@ def pretty_print(task_name, man, man_day, start_date, end_date, status, task_nam
     print("{} | {} | {} | {} | {} | {}".format(actual_task_name, actual_man, actual_man_day, 
                                                actual_start_date, actual_end_date, actual_status))
 
-def pretty_print_task(task, vacations, task_name_len):
-    pretty_print(task.name, task.man, task.man_day, task.start_date(vacations), 
-                 task.end_date(vacations), str(task.status) + "%", task_name_len)
+def pretty_print_task(task, project_start_date, vacations, task_name_len):
+    pretty_print(task.name, task.man, task.man_day, task.start_date(project_start_date, vacations), 
+                 task.end_date(project_start_date, vacations), str(task.status) + "%", task_name_len)
 
 def find_max_length_of_tasks(tasks):
     ret = 0
@@ -147,13 +147,14 @@ def find_max_length_of_tasks(tasks):
 def parse_date(input):
     return datetime.datetime.strptime(input, '%Y-%m-%d').date()
 
-def parse(filepath, project_start_date, target_man=None):
+def parse(filepath, target_man=None):
     f = open(filepath, 'r')
     s = f.read()
     lines = s.split('\n')
     tasks = []
     vacations = {}
 
+    project_start_date = None
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
@@ -164,7 +165,7 @@ def parse(filepath, project_start_date, target_man=None):
             status = 0
             if m.group(5):
                 status = m.group(5).strip()
-            task = Task(task_name, man_day, man, project_start_date, status)
+            task = Task(task_name, man_day, man, status)
             tasks.append(task)
         else:
             m = re.search(VACATION_PATTERN, line)
@@ -182,17 +183,18 @@ def parse(filepath, project_start_date, target_man=None):
                 while xdate <= vacation_date_end:
                     vacations[man].append(str(xdate))
                     xdate += datetime.timedelta(days=1)
+            else:
+                m = re.search(PROJECT_START_DATE_PATTERN, line)
+                if m and m.group(1):
+                    project_start_date = parse_date(m.group(1).strip())
 
-    stat = {}
-    for task in tasks:
-        if not stat.get(task.man):
-            stat[task.man] = 0
-
-        stat[task.man] += task.man_day
+    if not project_start_date:
+        help()
+        exit(1)
 
     schedule(tasks)
 
-    # pretty print the content
+    # pretty print the scheduler
     max_len = find_max_length_of_tasks(tasks)
     pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', max_len)
     pretty_print_second_line(max_len)
@@ -201,12 +203,12 @@ def parse(filepath, project_start_date, target_man=None):
     for task in tasks:
         if not target_man or task.man == target_man:
             total_man_days += task.man_day
-            pretty_print_task(task, vacations, max_len)
+            pretty_print_task(task, project_start_date, vacations, max_len)
     
     pretty_print(' ', ' ', total_man_days, ' ', ' ', ' ', max_len)
 
 def help():
-    print("scheduler.py -b <project_start_date> [-m <man>] /path/to/work-breakdown-file.markdown")
+    print("Usage: scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown")
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'b:m:')
@@ -215,17 +217,10 @@ if __name__ == '__main__':
         exit(1)
     
     filepath = args[0]
-    project_start_date = None
     man = None
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
-        if opt_name == '-b':
-            project_start_date = parse_date(opt_value)
-        elif opt_name == '-m':
+        if opt_name == '-m':
             man = opt_value
 
-    if not project_start_date:
-        help()
-        exit(1)
-
-    parse(filepath, project_start_date, man)
+    parse(filepath, man)
