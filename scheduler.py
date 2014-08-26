@@ -117,7 +117,9 @@ START_DATE_LEN = 10
 END_DATE_LEN = 10
 STATUS_LEN = 4
 def pretty_print_second_line(task_name_len):
-    pretty_print(repeat(task_name_len), repeat(MAN_LEN), repeat(MAN_DAY_LEN), repeat(START_DATE_LEN), repeat(END_DATE_LEN), repeat(STATUS_LEN), task_name_len)
+    pretty_print(repeat(task_name_len), repeat(MAN_LEN), repeat(MAN_DAY_LEN), 
+                 repeat(START_DATE_LEN), repeat(END_DATE_LEN), repeat(STATUS_LEN), 
+                 task_name_len)
 
 def pretty_print(task_name, man, man_day, start_date, end_date, status, task_name_len):
     actual_task_name = format_with_width(task_name, task_name_len)
@@ -127,10 +129,12 @@ def pretty_print(task_name, man, man_day, start_date, end_date, status, task_nam
     actual_end_date = format_with_width(str(end_date), END_DATE_LEN)
     actual_status = format_with_width(str(status), STATUS_LEN)
 
-    print("{} | {} | {} | {} | {} | {}".format(actual_task_name, actual_man, actual_man_day, actual_start_date, actual_end_date, actual_status))
+    print("{} | {} | {} | {} | {} | {}".format(actual_task_name, actual_man, actual_man_day, 
+                                               actual_start_date, actual_end_date, actual_status))
 
 def pretty_print_task(task, vacations, task_name_len):
-    pretty_print(task.name, task.man, task.man_day, task.start_date(vacations), task.end_date(vacations), str(task.status) + "%", task_name_len)
+    pretty_print(task.name, task.man, task.man_day, task.start_date(vacations), 
+                 task.end_date(vacations), str(task.status) + "%", task_name_len)
 
 def find_max_length_of_tasks(tasks):
     ret = 0
