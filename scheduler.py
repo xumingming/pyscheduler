@@ -189,7 +189,7 @@ def parse(filepath, target_man=None):
                     project_start_date = parse_date(m.group(1).strip())
 
     if not project_start_date:
-        help()
+        print("Please provide project_start_date!")
         exit(1)
 
     schedule(tasks)
@@ -211,7 +211,7 @@ def help():
     print("Usage: scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown")
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'b:m:')
+    opts, args = getopt.getopt(sys.argv[1:], 'm:')
     if not args or len(args) != 1:
         help()
         exit(1)
