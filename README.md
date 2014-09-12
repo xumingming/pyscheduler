@@ -57,8 +57,8 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 * 项目开始时间: 2014-08-21
 
 # 任务细分
-* 任务一 -- 2[James]<100%>
-* 任务二 -- 1[Lucy]<80%>
+* 任务一 -- 2[James][100%]
+* 任务二 -- 1[Lucy][80%]
 * 任务三 -- 1[James]
 * 任务四 -- 2[Lucy]
 ```
@@ -101,8 +101,8 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 * 项目开始时间: 2014-08-21
 
 # 任务细分
-* 任务一 -- 2[James]<100%>
-* 任务二 -- 1[Lucy]<80%>
+* 任务一 -- 2[James][100%]
+* 任务二 -- 1[Lucy][80%]
 * 任务三 -- 1[James]
 * 任务四 -- 2[Lucy]
 
