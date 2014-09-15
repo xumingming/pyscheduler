@@ -209,7 +209,7 @@ def parse(filepath, target_man=None):
     
     project_status = cost_man_days / total_man_days
     print("")
-    print(">> 总人日: {}, 已经完成的人日: {}, 完成度: {:.2%}".format(total_man_days,
+    print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(total_man_days,
                                                                cost_man_days,
                                                                project_status))
 
