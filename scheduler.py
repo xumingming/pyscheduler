@@ -27,7 +27,7 @@ class Task:
     def end_date(self, project_start_date, vacations):
         return add_days(self.man, project_start_date, vacations, self.start_point + self.man_day, False)
 
-TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*\[(.+?)\](\[([0-9]+)%\])?"
+TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\])?"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?"
 PROJECT_START_DATE_PATTERN = '项目开始时间\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
@@ -161,7 +161,12 @@ def parse(filepath, target_man=None):
             task_name = m.group(1).strip()
             man_day = m.group(2).strip()
             man_day = float(man_day)
-            man = m.group(3).strip()
+            man = m.group(4)
+            if man:
+                man = man.strip()
+            else:
+                man = "TODO"
+
             status = 0
             if m.group(5):
                 status = m.group(5).strip()
@@ -206,8 +211,11 @@ def parse(filepath, target_man=None):
             total_man_days += task.man_day
             cost_man_days += task.man_day * task.status / 100
             pretty_print_task(task, project_start_date, vacations, max_len)
-    
-    project_status = cost_man_days / total_man_days
+
+    project_status = 0
+    if total_man_days > 0:
+        project_status = cost_man_days / total_man_days
+
     print("")
     print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(total_man_days,
                                                                cost_man_days,
