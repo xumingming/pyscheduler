@@ -8,7 +8,7 @@ import datetime
 from math import ceil
 
 class Task:
-    def __init__(self, name, man_day, man, status=0):
+    def __init__(self, name, man_day, man, status=0, task_id=None):
         """
         Arguments:
         - `self`:
@@ -20,6 +20,7 @@ class Task:
         self.man = man
         self.status = int(status)
         self.start_point = None
+        self.id = task_id
 
     def start_date(self, project_start_date, vacations):
         return add_days(self.man, project_start_date, vacations, self.start_point)
@@ -74,11 +75,15 @@ def add_days(man, curr_day, vacations, days, is_start_date = True):
 
 def schedule(tasks):
     curr_days = {}
+    id_to_start_point = {}
     for task in tasks:
         if not curr_days.get(task.man):
             curr_days[task.man] = 0
         task.start_point = curr_days[task.man]
         curr_days[task.man] += task.man_day
+
+        if task.id:
+            id_to_start_point[task.id] = task.start_point
 
 def actual_width(ch):
     if ord(ch) < 256:
@@ -159,6 +164,15 @@ def parse(filepath, target_man=None):
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
             task_name = m.group(1).strip()
+            task_id = None
+            if task_name.find("ID:") >= 0:
+                start_idx = task_name.find("ID:") + 3
+                print(task_name[start_idx:])
+                end_idx = start_idx + task_name[start_idx:].find(" ")
+                task_id = task_name[start_idx:end_idx]
+                task_name = task_name[end_idx + 1:]
+                print("task id is ", start_idx, ", ", end_idx)
+                
             man_day = m.group(2).strip()
             man_day = float(man_day)
             man = m.group(4)
@@ -168,9 +182,9 @@ def parse(filepath, target_man=None):
                 man = "TODO"
 
             status = 0
-            if m.group(5):
-                status = m.group(5).strip()
-            task = Task(task_name, man_day, man, status)
+            if m.group(6):
+                status = m.group(6).strip()
+            task = Task(task_name, man_day, man, status, task_id)
             tasks.append(task)
         else:
             m = re.search(VACATION_PATTERN, line)
