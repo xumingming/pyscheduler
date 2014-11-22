@@ -120,7 +120,7 @@ def find_max_length_of_tasks(tasks):
     return ret
 
 def parse(filepath, project_start_date, target_man=None):
-    f = open(filepath, 'r')
+    f = open(filepath, 'r', encoding='utf-8')
     s = f.read()
     #print s
     lines = s.split('\n')
