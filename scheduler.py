@@ -5,6 +5,7 @@ import sys
 import getopt
 import re
 import datetime
+import codecs
 from math import ceil
 
 class Task:
@@ -153,7 +154,7 @@ def parse_date(input):
     return datetime.datetime.strptime(input, '%Y-%m-%d').date()
 
 def parse(filepath, target_man=None):
-    f = open(filepath, 'r', encoding='utf-8')
+    f = codecs.open(filepath, 'r')
     s = f.read()
     lines = s.split('\n')
     tasks = []
