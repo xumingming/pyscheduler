@@ -143,6 +143,16 @@ def pretty_print_task(task, project_start_date, vacations, task_name_len):
     pretty_print(task.name, task.man, task.man_day, task.start_date(project_start_date, vacations), 
                  task.end_date(project_start_date, vacations), str(task.status) + "%", task_name_len)
 
+def pretty_print_man_stats(tasks):
+    man2days = {}
+    for task in tasks:
+        if not man2days.get(task.man):
+            man2days[task.man] = 0
+        man2days[task.man] += task.man_day
+
+    for man in man2days.keys():
+        print("{}: {}".format(man, man2days[man]))
+        
 def pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations):
     # pretty print the scheduler
     max_len = find_max_length_of_tasks(tasks)
@@ -177,7 +187,7 @@ def find_max_length_of_tasks(tasks):
 def parse_date(input):
     return datetime.datetime.strptime(input, '%Y-%m-%d').date()
 
-def parse(filepath, append_section_title, target_man=None):
+def parse(filepath, append_section_title, target_man, print_man_stats):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
     lines = s.split('\n')
@@ -246,18 +256,21 @@ def parse(filepath, append_section_title, target_man=None):
 
     schedule(tasks)
     pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations)
+    if print_man_stats:
+        pretty_print_man_stats(tasks)
 
-
+        
 def help():
     print("""用法: scheduler.py <options> /path/to/work-breakdown-file.markdown
 
 Options:
   -m <man> 只显示指定人的任务
   -t 把每个section的标题apppend到这个section下面所有任务名称前面去
+  -s 显示每个人的任务数统计信息
 """)
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'm:t')
+    opts, args = getopt.getopt(sys.argv[1:], 'm:ts')
     if not args or len(args) != 1:
         help()
         exit(1)
@@ -265,12 +278,15 @@ if __name__ == '__main__':
     filepath = args[0]
     man = None
     append_section_title = False
+    print_man_stats = False
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-m':
             man = opt_value
         elif opt_name == '-t':
             append_section_title = True
+        elif opt_name == '-s':
+            print_man_stats = True
                 
 
-    parse(filepath, append_section_title, man)
+    parse(filepath, append_section_title, man, print_man_stats)
