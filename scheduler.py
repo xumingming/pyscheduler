@@ -143,6 +143,29 @@ def pretty_print_task(task, project_start_date, vacations, task_name_len):
     pretty_print(task.name, task.man, task.man_day, task.start_date(project_start_date, vacations), 
                  task.end_date(project_start_date, vacations), str(task.status) + "%", task_name_len)
 
+def pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations):
+    # pretty print the scheduler
+    max_len = find_max_length_of_tasks(tasks)
+    pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', max_len)
+    pretty_print_second_line(max_len)
+
+    total_man_days = 0
+    cost_man_days = 0
+    for task in tasks:
+        if not target_man or task.man == target_man:
+            total_man_days += task.man_day
+            cost_man_days += task.man_day * task.status / 100
+            pretty_print_task(task, project_start_date, vacations, max_len)
+
+    project_status = 0
+    if total_man_days > 0:
+        project_status = cost_man_days / total_man_days
+
+    print("")
+    print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(total_man_days,
+                                                               cost_man_days,
+                                                               project_status))
+    
 def find_max_length_of_tasks(tasks):
     ret = 0
     for task in tasks:
@@ -222,28 +245,8 @@ def parse(filepath, append_section_title, target_man=None):
         exit(1)
 
     schedule(tasks)
+    pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations)
 
-    # pretty print the scheduler
-    max_len = find_max_length_of_tasks(tasks)
-    pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', max_len)
-    pretty_print_second_line(max_len)
-
-    total_man_days = 0
-    cost_man_days = 0
-    for task in tasks:
-        if not target_man or task.man == target_man:
-            total_man_days += task.man_day
-            cost_man_days += task.man_day * task.status / 100
-            pretty_print_task(task, project_start_date, vacations, max_len)
-
-    project_status = 0
-    if total_man_days > 0:
-        project_status = cost_man_days / total_man_days
-
-    print("")
-    print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(total_man_days,
-                                                               cost_man_days,
-                                                               project_status))
 
 def help():
     print("""用法: scheduler.py <options> /path/to/work-breakdown-file.markdown
