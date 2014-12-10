@@ -29,6 +29,7 @@ class Task:
         return add_days(self.man, project_start_date, vacations, self.start_point + self.man_day, False)
 
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\])?\s*$"
+HEADER_PATTERN = "^#+(.*)"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
 PROJECT_START_DATE_PATTERN = '项目开始时间\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
@@ -160,10 +161,13 @@ def parse(filepath, target_man=None):
     vacations = {}
 
     project_start_date = None
+    curr_header = None
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
             task_name = m.group(1).strip()
+            if curr_header:
+                task_name = curr_header + ": " + task_name
             task_id = None
             if task_name.find("ID:") >= 0:
                 start_idx = task_name.find("ID:") + 3
@@ -206,6 +210,11 @@ def parse(filepath, target_man=None):
                 m = re.search(PROJECT_START_DATE_PATTERN, line)
                 if m and m.group(1):
                     project_start_date = parse_date(m.group(1).strip())
+                else:
+                    m = re.search(HEADER_PATTERN, line)
+
+                    if m:
+                        curr_header = m.group(1)
 
     if not project_start_date:
         print("Please provide project_start_date!")
