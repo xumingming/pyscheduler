@@ -153,7 +153,7 @@ def find_max_length_of_tasks(tasks):
 def parse_date(input):
     return datetime.datetime.strptime(input, '%Y-%m-%d').date()
 
-def parse(filepath, target_man=None):
+def parse(filepath, append_section_title, target_man=None):
     f = open(filepath, 'r', encoding='utf-8')
     s = f.read()
     lines = s.split('\n')
@@ -166,7 +166,7 @@ def parse(filepath, target_man=None):
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
             task_name = m.group(1).strip()
-            if curr_header:
+            if curr_header and append_section_title:
                 task_name = curr_header + ": " + task_name
             task_id = None
             if task_name.find("ID:") >= 0:
@@ -245,19 +245,28 @@ def parse(filepath, target_man=None):
                                                                project_status))
 
 def help():
-    print("Usage: scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown")
+    print("""用法: scheduler.py <options> /path/to/work-breakdown-file.markdown
+
+Options:
+  -m <man> 只显示指定人的任务
+  -t 把每个section的标题apppend到这个section下面所有任务名称前面去
+""")
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'm:')
+    opts, args = getopt.getopt(sys.argv[1:], 'm:t')
     if not args or len(args) != 1:
         help()
         exit(1)
     
     filepath = args[0]
     man = None
+    append_section_title = False
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-m':
             man = opt_value
+        elif opt_name == '-t':
+            append_section_title = True
+                
 
-    parse(filepath, man)
+    parse(filepath, append_section_title, man)
