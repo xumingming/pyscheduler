@@ -145,7 +145,7 @@ def pretty_print_man_stats(tasks):
         if not man2days.get(task.man):
             man2days[task.man] = 0
         man2days[task.man] += task.man_day
-
+        
     for man in sorted(man2days):
         print("{}: {}".format(man, man2days[man]))
         
@@ -201,20 +201,20 @@ def parse_task_line(tasks, curr_headers, append_section_title, m):
     if len(curr_headers) > 0 and append_section_title:
         task_name = get_headers_as_str(curr_headers) + "-" + task_name
         
-        man_day = m.group(2).strip()
-        man_day = float(man_day)
-        man = m.group(4)
-        if man:
-            man = man.strip()
-        else:
-            man = "TODO"
+    man_day = m.group(2).strip()
+    man_day = float(man_day)
+    man = m.group(4)
+    if man:
+        man = man.strip()
+    else:
+        man = "TODO"
 
-        status = 0
-        if m.group(6):
-            status = m.group(6).strip()
-            
-        task = Task(task_name, man_day, man, status)
-        tasks.append(task)
+    status = 0
+    if m.group(6):
+        status = m.group(6).strip()
+         
+    task = Task(task_name, man_day, man, status)
+    tasks.append(task)
 
 def parse_vacation_line(vacations, m):
     man = m.group(1).strip()
