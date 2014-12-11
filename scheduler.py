@@ -256,7 +256,7 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
                         parse_header_line(curr_headers, m)
                         
     if not project_start_date:
-        print("Please provide project_start_date!")
+        print("请在文件中指定项目开始时间！")
         exit(1)
 
     schedule(tasks)
