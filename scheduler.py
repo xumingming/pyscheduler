@@ -215,6 +215,21 @@ def parse_task_line(tasks, curr_headers, append_section_title, m):
             
         task = Task(task_name, man_day, man, status)
         tasks.append(task)
+
+def parse_vacation_line(vacations, m):
+    man = m.group(1).strip()
+    vacation_date = parse_date(m.group(2).strip())
+    vacation_date_end = vacation_date
+    if m.group(4):
+        vacation_date_end = parse_date(m.group(4).strip())
+
+    if not vacations.get(man):
+        vacations[man] = []
+
+    xdate = vacation_date
+    while xdate <= vacation_date_end:
+        vacations[man].append(str(xdate))
+        xdate += datetime.timedelta(days=1)
     
 def parse(filepath, append_section_title, target_man, print_man_stats):
     f = codecs.open(filepath, 'r', 'utf-8')    
@@ -232,19 +247,7 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
         else:
             m = re.search(VACATION_PATTERN, line)
             if m:
-                man = m.group(1).strip()
-                vacation_date = parse_date(m.group(2).strip())
-                vacation_date_end = vacation_date
-                if m.group(4):
-                    vacation_date_end = parse_date(m.group(4).strip())
-
-                if not vacations.get(man):
-                    vacations[man] = []
-
-                xdate = vacation_date
-                while xdate <= vacation_date_end:
-                    vacations[man].append(str(xdate))
-                    xdate += datetime.timedelta(days=1)
+                parse_vacation_line(vacations, m)
             else:
                 m = re.search(PROJECT_START_DATE_PATTERN, line)
                 if m and m.group(1):
