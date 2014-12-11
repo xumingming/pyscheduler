@@ -150,7 +150,7 @@ def pretty_print_man_stats(tasks):
             man2days[task.man] = 0
         man2days[task.man] += task.man_day
 
-    for man in man2days.keys():
+    for man in sorted(man2days):
         print("{}: {}".format(man, man2days[man]))
         
 def pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations):
