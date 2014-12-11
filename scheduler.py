@@ -195,6 +195,26 @@ def update_headers(curr_headers, m):
             curr_headers.pop()
             
     curr_headers.append([new_header_level, new_header])
+
+def parse_task_line(tasks, curr_headers, append_section_title, m):
+    task_name = m.group(1).strip()
+    if len(curr_headers) > 0 and append_section_title:
+        task_name = get_headers_as_str(curr_headers) + "-" + task_name
+        
+        man_day = m.group(2).strip()
+        man_day = float(man_day)
+        man = m.group(4)
+        if man:
+            man = man.strip()
+        else:
+            man = "TODO"
+
+        status = 0
+        if m.group(6):
+            status = m.group(6).strip()
+            
+        task = Task(task_name, man_day, man, status)
+        tasks.append(task)
     
 def parse(filepath, append_section_title, target_man, print_man_stats):
     f = codecs.open(filepath, 'r', 'utf-8')    
@@ -208,23 +228,7 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
-            task_name = m.group(1).strip()
-            if len(curr_headers) > 0 and append_section_title:
-                task_name = get_headers_as_str(curr_headers) + "-" + task_name
-                
-            man_day = m.group(2).strip()
-            man_day = float(man_day)
-            man = m.group(4)
-            if man:
-                man = man.strip()
-            else:
-                man = "TODO"
-
-            status = 0
-            if m.group(6):
-                status = m.group(6).strip()
-            task = Task(task_name, man_day, man, status)
-            tasks.append(task)
+            parse_task_line(tasks, curr_headers, append_section_title, m)
         else:
             m = re.search(VACATION_PATTERN, line)
             if m:
