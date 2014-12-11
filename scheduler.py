@@ -30,7 +30,7 @@ class Task:
         return add_days(self.man, project_start_date, vacations, self.start_point + self.man_day, False)
 
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\])?\s*$"
-HEADER_PATTERN = "^#+(.*)"
+HEADER_PATTERN = "^(#+)(.*)"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
 PROJECT_START_DATE_PATTERN = '项目开始时间\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
@@ -187,6 +187,19 @@ def find_max_length_of_tasks(tasks):
 def parse_date(input):
     return datetime.datetime.strptime(input, '%Y-%m-%d').date()
 
+def get_headers_as_str(headers):
+    return "-".join([header for [_, header] in headers])
+
+def update_headers(curr_headers, m):
+    new_header_level = len(m.group(1).strip())
+    new_header = m.group(2).strip()    
+    for i in range(len(curr_headers)):
+        header_level, header = curr_headers[len(curr_headers) - 1 - i]
+        if new_header_level <= header_level:
+            curr_headers.pop()
+            
+    curr_headers.append([new_header_level, new_header])
+    
 def parse(filepath, append_section_title, target_man, print_man_stats):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
@@ -195,13 +208,14 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
     vacations = {}
 
     project_start_date = None
-    curr_header = None
+    curr_headers = []
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
             task_name = m.group(1).strip()
-            if curr_header and append_section_title:
-                task_name = curr_header + "-" + task_name
+            if len(curr_headers) > 0 and append_section_title:
+                task_name = get_headers_as_str(curr_headers) + "-" + task_name
+                
             task_id = None
             if task_name.find("ID:") >= 0:
                 start_idx = task_name.find("ID:") + 3
@@ -248,8 +262,8 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
                     m = re.search(HEADER_PATTERN, line)
 
                     if m:
-                        curr_header = m.group(1)
-
+                        update_headers(curr_headers, m)
+                        
     if not project_start_date:
         print("Please provide project_start_date!")
         exit(1)
