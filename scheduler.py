@@ -254,7 +254,6 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
                     project_start_date = parse_date(m.group(1).strip())
                 else:
                     m = re.search(HEADER_PATTERN, line)
-
                     if m:
                         parse_header_line(curr_headers, m)
                         
