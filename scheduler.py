@@ -186,7 +186,7 @@ def parse_date(input):
 def get_headers_as_str(headers):
     return "-".join([header for [_, header] in headers])
 
-def update_headers(curr_headers, m):
+def parse_header_line(curr_headers, m):
     new_header_level = len(m.group(1).strip())
     new_header = m.group(2).strip()    
     for i in range(len(curr_headers)):
@@ -253,7 +253,7 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
                     m = re.search(HEADER_PATTERN, line)
 
                     if m:
-                        update_headers(curr_headers, m)
+                        parse_header_line(curr_headers, m)
                         
     if not project_start_date:
         print("Please provide project_start_date!")
