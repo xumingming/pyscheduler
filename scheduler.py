@@ -201,7 +201,7 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
         if m:
             task_name = m.group(1).strip()
             if curr_header and append_section_title:
-                task_name = curr_header + ": " + task_name
+                task_name = curr_header + "-" + task_name
             task_id = None
             if task_name.find("ID:") >= 0:
                 start_idx = task_name.find("ID:") + 3
