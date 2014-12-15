@@ -241,7 +241,7 @@ def parse_vacation_line(vacations, m):
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
     
-def parse(filepath, append_section_title, target_man, print_man_stats):
+def parse(filepath, append_section_title, target_man, print_man_stats, only_nonstarted):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
     lines = s.split('\n')
@@ -272,6 +272,11 @@ def parse(filepath, append_section_title, target_man, print_man_stats):
         exit(1)
 
     schedule(tasks)
+
+    # filter the tasks
+    if only_nonstarted:
+        tasks = [task for task in tasks if task.status == 0]
+    
     pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations)
     if print_man_stats:
         pretty_print_man_stats(tasks)
@@ -287,7 +292,7 @@ Options:
 """)
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'm:ts')
+    opts, args = getopt.getopt(sys.argv[1:], 'm:tsn')
     if not args or len(args) != 1:
         help()
         exit(1)
@@ -296,6 +301,7 @@ if __name__ == '__main__':
     man = None
     append_section_title = False
     print_man_stats = False
+    only_nonstarted = False
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-m':
@@ -304,6 +310,7 @@ if __name__ == '__main__':
             append_section_title = True
         elif opt_name == '-s':
             print_man_stats = True
-                
+        elif opt_name == '-n':
+            only_nonstarted = True
 
-    parse(filepath, append_section_title, man, print_man_stats)
+    parse(filepath, append_section_title, man, print_man_stats, only_nonstarted)
