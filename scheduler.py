@@ -143,11 +143,21 @@ def pretty_print_man_stats(tasks):
     man2days = {}
     for task in tasks:
         if not man2days.get(task.man):
-            man2days[task.man] = 0
-        man2days[task.man] += task.man_day
+            man2days[task.man] = [0,0] # finished_man_days, total_man_days
+
+        task_status = task.status
+        man_days = task.man_day
+        
+        finished_man_days = task_status * man_days / 100
+        man2days[task.man][0] = man2days[task.man][0] + finished_man_days
+        man2days[task.man][1] = man2days[task.man][1] + man_days
         
     for man in sorted(man2days):
-        print("{}: {}".format(man, man2days[man]))
+        finished_man_days = man2days[man][0]        
+        total_man_days = man2days[man][1]
+        total_status = (finished_man_days / total_man_days) * 100
+        
+        print("{}: {}/{} {:.0f}%".format(man, finished_man_days, total_man_days, total_status))
         
 def pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations):
     # pretty print the scheduler
