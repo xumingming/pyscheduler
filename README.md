@@ -11,17 +11,18 @@ pyscheduler
 
 ## 目前我们支持如下几个特性:
 
-* [对列出来的任务自动进行排期，并以 Markdown Table 的语法进行输出](#Usage)
-* [跟踪任务进度](#Track-Progress)
-* [根据任务负责人对任务进行过滤](#Filter-By-People)
-* [支持对人员请假情况进行记录](#Track-Leave)
-* [支持对一个大任务进行拆解](#Task-Break)
-* [支持显示每个人任务完成情况](#Show-All-Progress)
-* [显示没有开始的任务](#Show-Undone-Task)
+* [对列出来的任务自动进行排期，并以 Markdown Table 的语法进行输出](#usage)
+* [跟踪任务进度](#track-progress)
+* [根据任务负责人对任务进行过滤](#filter-by-people)
+* [支持对人员请假情况进行记录](#track-leave)
+* [支持对一个大任务进行拆解](#task-break)
+* [支持显示每个人任务完成情况](#show-all-progress)
+* [显示没有开始的任务](#show-undone-task)
 
 
-## Usage
+## usage
 
+### 基本用法
 
 ```bash
 scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
@@ -57,8 +58,9 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 大家也许注意到了，你如果把这段输出保存成一个`markdown`文件，它其实就形成了一个表格。也就是说你只需要维护上面提到的任务基本信息，利用这个小工具可以自动给你生成排期表。
 
 
-## Track-Progress
+## track-progress
 
+### 跟踪任务进度
 
 当然，随着时间的推移你可以对你的任务的进度进行更新, 我们支持在 breakdown 文件里面对任务进度进行跟踪，生成的排期里面会自动把进度带过去：
 
@@ -87,7 +89,7 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 >>> 总人日: 6.0, 已经完成的人日: 2.8, 完成度: 46.67%
 ```
 
-## Filter-By-People
+## filter-by-people
 
 ### 根据任务负责人对任务进行过滤
 
@@ -103,7 +105,7 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 >>> 总人日: 3.0, 已经完成的人日: 2.0, 完成度: 66.67%
 ```
 
-## Track-Leave
+## track-leave
 
 ### 支持对人员请假情况进行记录
 
@@ -135,7 +137,7 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 >>> 总人日: 3.0, 已经完成的人日: 2.0, 完成度: 66.67%
 ```
 
-## Task-Break
+## task-break
 
 ### 支持对一个大任务进行拆解
 
@@ -219,7 +221,7 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 >> 总人日: 9.0, 已经完成的人日: 0.00, 完成度: 0.00%
 ```
 
-## Show-All-Progress
+## show-all-progress
 
 ### 支持显示每个人任务完成情况
 
@@ -239,7 +241,7 @@ Lucy: 3.0
 James: 3.0
 ```
 
-## Show-Undone-Task
+## show-undone-task
 
 ### 显示没有开始的任务
 有时候我们想看看有哪些任务还没有开始做，这个我们也是支持的，比如下面的 breakdown 文件:
