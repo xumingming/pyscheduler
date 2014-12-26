@@ -21,8 +21,6 @@ pyscheduler
 
 ## Usage
 
-### 基本用法
-
 ```bash
 scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 ```
@@ -57,8 +55,6 @@ scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
 大家也许注意到了，你如果把这段输出保存成一个`markdown`文件，它其实就形成了一个表格。也就是说你只需要维护上面提到的任务基本信息，利用这个小工具可以自动给你生成排期表。
 
 ## Track-Progress
-
-### 跟踪任务进度
 
 当然，随着时间的推移你可以对你的任务的进度进行更新, 我们支持在 breakdown 文件里面对任务进度进行跟踪，生成的排期里面会自动把进度带过去：
 
