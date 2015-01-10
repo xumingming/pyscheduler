@@ -50,6 +50,16 @@ def skip_vacation(man, date1, vacations):
     else:
         return False, date1
 
+def skip_weekend_or_vacation(man, date1, vacations):
+    while True:
+        skipped, date1 = skip_weekend(date1)
+        skipped, date1 = skip_vacation(man, date1, vacations)
+        
+        if not skipped:
+            break
+
+    return date1
+
 def add_days(man, curr_day, vacations, days, is_start_date = True):
     idx = int(ceil(days))
     if idx > days:
@@ -59,16 +69,14 @@ def add_days(man, curr_day, vacations, days, is_start_date = True):
             idx -= 1
 
     ret = curr_day
+    # current day may be a weekend day, so we skip the weekend first
+    ret = skip_weekend_or_vacation(man, ret, vacations)
+    
     while idx > 0:
         ret = ret + datetime.timedelta(days=1)
 
         # skip the weekend and vacations
-        while True:
-            skipped, ret = skip_weekend(ret)
-            skipped, ret = skip_vacation(man, ret, vacations)
-            
-            if not skipped:
-                break
+        ret = skip_weekend_or_vacation(man, ret, vacations)
 
         idx -= 1
 
@@ -157,7 +165,7 @@ def pretty_print_man_stats(tasks):
         total_man_days = man2days[man][1]
         total_status = (finished_man_days / total_man_days) * 100
         
-        print("{}: {}/{} {:.0f}%".format(man, finished_man_days, total_man_days, total_status))
+        print("{}: {:.0f}/{} {:.0f}%".format(man, finished_man_days, total_man_days, total_status))
         
 def pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations):
     # pretty print the scheduler
