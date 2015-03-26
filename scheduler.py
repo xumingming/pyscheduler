@@ -28,7 +28,7 @@ class Task:
     def end_date(self, project_start_date, vacations):
         return add_days(self.man, project_start_date, vacations, self.start_point + self.man_day, False)
 
-TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\])?\s*$"
+TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
 HEADER_PATTERN = "^(#+)(.*)"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
 PROJECT_START_DATE_PATTERN = '项目开始时间\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
@@ -283,7 +283,7 @@ def parse(filepath, append_section_title, target_man, print_man_stats, only_nons
 
     # filter the tasks
     if only_nonstarted:
-        tasks = [task for task in tasks if task.status == 0]
+        tasks = [task for task in tasks if task.status < 100]
     
     pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations)
     if print_man_stats:
