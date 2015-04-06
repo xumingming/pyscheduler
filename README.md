@@ -18,6 +18,7 @@ pyscheduler
 * [支持对一个大任务进行拆解](#task-break)
 * [支持显示每个人任务完成情况](#show-all-progress)
 * [显示没有开始的任务](#show-undone-task)
+* [我们现在有可视化UI了](#scheduler-ui)
 
 
 ## usage
