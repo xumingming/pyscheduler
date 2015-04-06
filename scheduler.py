@@ -8,6 +8,49 @@ import datetime
 import codecs
 from math import ceil
 
+class Project:
+    def __init__(self, project_start_date, tasks, vacations):
+        self.project_start_date = project_start_date
+        self.tasks = tasks
+        self.vacations = vacations
+
+        self.mans = []
+        self.status = 0
+        self.total_man_days = 0
+        self.cost_man_days = 0
+        self.init_status()
+        
+    def task_start_date(self, task):
+        return add_days(task.man, self.project_start_date, self.vacations, task.start_point)
+
+    def task_end_date(self, task):
+        return add_days(task.man, self.project_start_date, self.vacations, task.start_point + task.man_day, False)
+
+    def init_status(self):
+        total_man_days = 0
+        cost_man_days = 0
+        for task in self.tasks:
+            total_man_days += task.man_day
+            cost_man_days += task.man_day * task.status / 100
+            if not task.man in self.mans:
+                self.mans.append(task.man)
+
+            task.start_date = self.task_start_date(task)
+            task.end_date = self.task_end_date(task)
+            
+        project_status = 0
+        if total_man_days > 0:
+            project_status = cost_man_days / total_man_days
+
+        self.total_man_days = total_man_days
+        self.cost_man_days
+        self.status = project_status
+
+        # init mans
+        
+    def max_task_name_length(self):
+        return find_max_length_of_tasks(self.tasks)
+        
 class Task:
     def __init__(self, name, man_day, man, status=0):
         """
@@ -21,12 +64,8 @@ class Task:
         self.man = man
         self.status = int(status)
         self.start_point = None
-
-    def start_date(self, project_start_date, vacations):
-        return add_days(self.man, project_start_date, vacations, self.start_point)
-
-    def end_date(self, project_start_date, vacations):
-        return add_days(self.man, project_start_date, vacations, self.start_point + self.man_day, False)
+        self.start_date = None
+        self.end_date = None
 
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
 HEADER_PATTERN = "^(#+)(.*)"
@@ -143,9 +182,9 @@ def pretty_print(task_name, man, man_day, start_date, end_date, status, task_nam
     print("{} | {} | {} | {} | {} | {}".format(actual_task_name, actual_man, actual_man_day, 
                                                actual_start_date, actual_end_date, actual_status))
 
-def pretty_print_task(task, project_start_date, vacations, task_name_len):
-    pretty_print(task.name, task.man, task.man_day, task.start_date(project_start_date, vacations), 
-                 task.end_date(project_start_date, vacations), str(task.status) + "%", task_name_len)
+def pretty_print_task(project, task):
+    pretty_print(task.name, task.man, task.man_day, project.task_start_date(task), 
+                 project.task_end_date(task), str(task.status) + "%", project.max_task_name_length())
 
 def pretty_print_man_stats(tasks):
     man2days = {}
@@ -167,28 +206,19 @@ def pretty_print_man_stats(tasks):
         
         print("{}: {:.0f}/{} {:.0f}%".format(man, finished_man_days, total_man_days, total_status))
         
-def pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations):
+def pretty_print_scheduled_tasks(project, target_man):
     # pretty print the scheduler
-    max_len = find_max_length_of_tasks(tasks)
-    pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', max_len)
-    pretty_print_second_line(max_len)
+    pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', project.max_task_name_length())
+    pretty_print_second_line(project.max_task_name_length())
 
-    total_man_days = 0
-    cost_man_days = 0
-    for task in tasks:
+    for task in project.tasks:
         if not target_man or task.man == target_man:
-            total_man_days += task.man_day
-            cost_man_days += task.man_day * task.status / 100
-            pretty_print_task(task, project_start_date, vacations, max_len)
-
-    project_status = 0
-    if total_man_days > 0:
-        project_status = cost_man_days / total_man_days
-
+            pretty_print_task(project, task)
+            
     print("")
-    print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(total_man_days,
-                                                               cost_man_days,
-                                                               project_status))
+    print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(project.total_man_days,
+                                                                         project.cost_man_days,
+                                                                         project.status))
     
 def find_max_length_of_tasks(tasks):
     ret = 0
@@ -248,8 +278,8 @@ def parse_vacation_line(vacations, m):
     while xdate <= vacation_date_end:
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
-    
-def parse(filepath, append_section_title, target_man, print_man_stats, only_nonstarted):
+
+def parse(filepath, append_section_title = True):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
     lines = s.split('\n')
@@ -281,13 +311,17 @@ def parse(filepath, append_section_title, target_man, print_man_stats, only_nons
 
     schedule(tasks)
 
+    return Project(project_start_date, tasks, vacations)
+    
+def parse_and_print(filepath, append_section_title, target_man, print_man_stats, only_nonstarted):
+    project = parse(filepath, append_section_title)
     # filter the tasks
     if only_nonstarted:
-        tasks = [task for task in tasks if task.status < 100]
+        project.tasks = [task for task in project.tasks if task.status < 100]
     
-    pretty_print_scheduled_tasks(tasks, project_start_date, target_man, vacations)
+    pretty_print_scheduled_tasks(project, target_man)
     if print_man_stats:
-        pretty_print_man_stats(tasks)
+        pretty_print_man_stats(project.tasks)
 
         
 def help():
@@ -321,4 +355,4 @@ if __name__ == '__main__':
         elif opt_name == '-n':
             only_nonstarted = True
 
-    parse(filepath, append_section_title, man, print_man_stats, only_nonstarted)
+    parse_and_print(filepath, append_section_title, man, print_man_stats, only_nonstarted)
