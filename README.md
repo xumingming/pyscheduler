@@ -281,4 +281,5 @@ James: 3.0
 
     python server.py <path-to-your-breakdown-file>
 
-![]()
+***目前这个页面还是朴素的，有页面功夫比较厉害的，欢迎把它美化美化***
+![](scheduler-ui.png)
