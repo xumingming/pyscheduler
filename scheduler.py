@@ -8,6 +8,13 @@ import datetime
 import codecs
 from math import ceil
 
+class Options:
+    def __init__(self):
+        self.print_man_stats = False
+        self.only_nonstarted = False
+        self.english = False
+        self.man = None
+        
 class Project:
     def __init__(self, project_start_date, tasks, vacations):
         self.project_start_date = project_start_date
@@ -206,9 +213,9 @@ def pretty_print_man_stats(tasks):
         
         print("{}: {:.0f}/{} {:.0f}%".format(man, finished_man_days, total_man_days, total_status))
         
-def pretty_print_scheduled_tasks(project, target_man, english):
+def pretty_print_scheduled_tasks(project, options):
     # pretty print the scheduler
-    if english:
+    if options.english:
         pretty_print('Task', 'Developer', 'Man-days', 'Start Date', 'End Date', 'Progress', project.max_task_name_length())
     else:
         pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', project.max_task_name_length())
@@ -216,12 +223,12 @@ def pretty_print_scheduled_tasks(project, target_man, english):
     pretty_print_second_line(project.max_task_name_length())
 
     for task in project.tasks:
-        if not target_man or task.man == target_man:
+        if not options.man or task.man == options.man:
             pretty_print_task(project, task)
             
     print("")
 
-    if english:
+    if options.english:
         print(">> Total mandays: {}, Finished mandays: {:.2f}, Progress: {:.2%}".format(project.total_man_days,
                                                                                         project.cost_man_days,
                                                                                         project.status))
@@ -254,9 +261,9 @@ def parse_header_line(curr_headers, m):
             
     curr_headers.append([new_header_level, new_header])
 
-def parse_task_line(tasks, curr_headers, append_section_title, m):
+def parse_task_line(tasks, curr_headers, m):
     task_name = m.group(1).strip()
-    if len(curr_headers) > 0 and append_section_title:
+    if len(curr_headers) > 0:
         task_name = get_headers_as_str(curr_headers) + "-" + task_name
         
     man_day = m.group(2).strip()
@@ -289,7 +296,7 @@ def parse_vacation_line(vacations, m):
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
 
-def parse(filepath, append_section_title = True, english = False):
+def parse(filepath, options):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
     lines = s.split('\n')
@@ -301,7 +308,7 @@ def parse(filepath, append_section_title = True, english = False):
     for line in lines:
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
-            parse_task_line(tasks, curr_headers, append_section_title, m)
+            parse_task_line(tasks, curr_headers, m)
         else:
             m = re.search(VACATION_PATTERN, line)
             if m:
@@ -323,14 +330,14 @@ def parse(filepath, append_section_title = True, english = False):
 
     return Project(project_start_date, tasks, vacations)
     
-def parse_and_print(filepath, append_section_title, target_man, print_man_stats, only_nonstarted, english):
-    project = parse(filepath, append_section_title, english)
+def parse_and_print(filepath, options):
+    project = parse(filepath, options)
     # filter the tasks
-    if only_nonstarted:
+    if options.only_nonstarted:
         project.tasks = [task for task in project.tasks if task.status < 100]
     
-    pretty_print_scheduled_tasks(project, target_man, english)
-    if print_man_stats:
+    pretty_print_scheduled_tasks(project, options)
+    if options.print_man_stats:
         pretty_print_man_stats(project.tasks)
 
         
@@ -351,21 +358,17 @@ if __name__ == '__main__':
     
     filepath = args[0]
     man = None
-    append_section_title = False
-    print_man_stats = False
-    only_nonstarted = False
-    english = False
+
+    options = Options()
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-m':
-            man = opt_value
-        elif opt_name == '-t':
-            append_section_title = True
+            options.man = opt_value
         elif opt_name == '-s':
-            print_man_stats = True
+            options.print_man_stats = True
         elif opt_name == '-n':
-            only_nonstarted = True
+            options.only_nonstarted = True
         elif opt_name == '-e':
-            english = True
+            options.english = True
 
-    parse_and_print(filepath, append_section_title, man, print_man_stats, only_nonstarted, english)
+    parse_and_print(filepath, options)
