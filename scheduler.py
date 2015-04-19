@@ -296,7 +296,7 @@ def parse_vacation_line(vacations, m):
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
 
-def parse(filepath, options):
+def parse(filepath):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
     lines = s.split('\n')
@@ -331,7 +331,7 @@ def parse(filepath, options):
     return Project(project_start_date, tasks, vacations)
     
 def parse_and_print(filepath, options):
-    project = parse(filepath, options)
+    project = parse(filepath)
     # filter the tasks
     if options.only_nonstarted:
         project.tasks = [task for task in project.tasks if task.status < 100]
