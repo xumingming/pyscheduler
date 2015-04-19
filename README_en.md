@@ -24,14 +24,14 @@ This tiny software is to solve the above issues.
 ### Basic Usage
 
 ```bash
-scheduler.py [-m <man>] /path/to/work-breakdown-file.markdown
+scheduler.py [-m <man>] -e /path/to/work-breakdown-file.markdown
 ```
 
 The input file for the command line tool is a `markdown` file(see test_en.markdown for an example), you can define the tasks of your project in a file, e.g.
 
 ```bash
 # Task basic info
-* 项目开始时间: 2014-08-21
+* ProjectStartDate: 2014-08-21
 
 # task breakdown
 * task1 -- 2[James]
@@ -43,14 +43,15 @@ The input file for the command line tool is a `markdown` file(see test_en.markdo
 The above file defines that the project starts from `2014-08-21`, and defines the tasks of the project, now run the following command, we get an auto-scheduled project plan(If you use a Fixed-Width Font you will find that the table generated is well aligned)
 
 ```bash
-> ./scheduler.py /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
------ | ------ | -------- | ---------- | ---------- | ----
-task1 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 0%
-task2 | Lucy   | 1.0      | 2014-08-21 | 2014-08-21 | 0%
-task3 | James  | 1.0      | 2014-08-25 | 2014-08-25 | 0%
-task4 | Lucy   | 2.0      | 2014-08-22 | 2014-08-25 | 0%
->>> 总人日: 6.0, 已经完成的人日: 0.0, 完成度: 0.00%
+> ./scheduler.py -e /tmp/test.markdown
+Task  | Developer  | Man-days | Start Date | End Date   | Progress
+----- | ---------- | -------- | ---------- | ---------- | ----
+task1 | James      | 2.0      | 2014-08-21 | 2014-08-22 | 0%
+task2 | Lucy       | 1.0      | 2014-08-21 | 2014-08-21 | 0%
+task3 | James      | 1.0      | 2014-08-25 | 2014-08-25 | 0%
+task4 | Lucy       | 2.0      | 2014-08-22 | 2014-08-25 | 0%
+
+>> Total mandays: 6.0, Finished mandays: 0.00, Progress: 0.00%
 ```
 
 You may have already noticed that if you save the output into a `markdown` file, the content is actually a table. i.e. **You only need to maintain the task list and how much time every task takes, this software will auto-schedule the plan for you.
@@ -61,7 +62,7 @@ As time flies, you need to update the status of each task, we support to update 
 
 ```bash
 # Task basic info
-* 项目开始时间: 2014-08-21
+* ProjectStartDate: 2014-08-21
 
 # task breakdown
 * task1 -- 2[James][100%]
@@ -73,15 +74,15 @@ As time flies, you need to update the status of each task, we support to update 
 re-run the command, you get a new **updated** plan:
 
 ```bash
->  ./scheduler.py /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
------ | ------ | -------- | ---------- | ---------- | ----
-task1 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 100%
-task2 | Lucy   | 1.0      | 2014-08-21 | 2014-08-21 | 80%
-task3 | James  | 1.0      | 2014-08-25 | 2014-08-25 | 0%
-task4 | Lucy   | 2.0      | 2014-08-22 | 2014-08-25 | 0%
+>  ./scheduler.py -e /tmp/test.markdown
+Task  | Developer  | Man-days | Start Date | End Date   | Progress
+----- | ---------- | -------- | ---------- | ---------- | ----
+task1 | James      | 2.0      | 2014-08-21 | 2014-08-22 | 100%
+task2 | Lucy       | 1.0      | 2014-08-21 | 2014-08-21 | 80%
+task3 | James      | 1.0      | 2014-08-25 | 2014-08-25 | 0%
+task4 | Lucy       | 2.0      | 2014-08-22 | 2014-08-25 | 0%
 
->> 总人日: 6.0, 已经完成的人日: 0.00, 完成度: 46.67%
+>> Total mandays: 6.0, Finished mandays: 0.00, Progress: 46.67%
 ```
 
 ## Filter tasks by people
@@ -90,12 +91,12 @@ If you want to check out all the tasks assigned to `James`, add a `-m` param:
 
 ```bash
 > ./scheduler.py -m James /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
------ | ------ | -------- | ---------- | ---------- | ----
-task1 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 100%
-task3 | James  | 1.0      | 2014-08-25 | 2014-08-25 | 0%
+Task  | Developer  | Man-days | Start Date | End Date   | Progress
+----- | ---------- | -------- | ---------- | ---------- | ----
+task1 | James      | 2.0      | 2014-08-21 | 2014-08-22 | 0%
+task3 | James      | 1.0      | 2014-08-25 | 2014-08-25 | 0%
 
->> 总人日: 6.0, 已经完成的人日: 0.00, 完成度: 46.67%
+>> Total mandays: 6.0, Finished mandays: 0.00, Progress: 0.00%
 ```
 
 ### Track Vacation
@@ -104,7 +105,7 @@ During a project, it is almost inevitable that someone will ask for leave for so
 
 ```bash
 # Task basic info
-* 项目开始时间: 2014-08-21
+* ProjectStartDate: 2014-08-21
 
 # task breakdown
 * task1 -- 2[James][100%]
@@ -119,13 +120,13 @@ During a project, it is almost inevitable that someone will ask for leave for so
 re-run the command again, we get the following plan: 
 
 ```bash
-> ./scheduler.py -m James /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
------ | ------ | -------- | ---------- | ---------- | ----
-task1 | James  | 2.0      | 2014-08-21 | 2014-08-25 | 100%
-task3 | James  | 1.0      | 2014-08-26 | 2014-08-26 | 0%
+> ./scheduler.py -e -m James /tmp/test.markdown
+Task  | Developer  | Man-days | Start Date | End Date   | Progress
+----- | ---------- | -------- | ---------- | ---------- | ----
+task1 | James      | 2.0      | 2014-08-21 | 2014-08-25 | 100%
+task3 | James      | 1.0      | 2014-08-26 | 2014-08-26 | 0%
 
->> 总人日: 6.0, 已经完成的人日: 0.00, 完成度: 46.67%
+>> Total mandays: 6.0, Finished mandays: 0.00, Progress: 46.67%
 ```
 
 ## Break big tasks
@@ -134,7 +135,7 @@ Sometimes we may encounter this kind of issue: A task is made up of several smal
 
 ```bash
 # Task basic info
-* 项目开始时间: 2014-08-21
+* ProjectStartDate: 2014-08-21
 
 # Basic
 * task1 -- 2[James][100%]
@@ -155,19 +156,19 @@ Sometimes we may encounter this kind of issue: A task is made up of several smal
 re-run the command(with a new option: `-t`) we get:
 
 ```bash
-> ./scheduler.py -t /tmp/test.md
-任务                   | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
----------------------- | ------ | -------- | ---------- | ---------- | ----
-Basic-task1            | James  | 2.0      | 2014-08-21 | 2014-08-25 | 100%
-Basic-task2            | Lucy   | 1.0      | 2014-08-21 | 2014-08-21 | 80%
-Basic-task3            | James  | 1.0      | 2014-08-26 | 2014-08-26 | 0%
-Basic-task4            | Lucy   | 2.0      | 2014-08-22 | 2014-08-25 | 0%
-Basic-Product-Create   | James  | 2.0      | 2014-08-27 | 2014-08-28 | 0%
-Basic-Product-Delete   | Lucy   | 1.0      | 2014-08-26 | 2014-08-26 | 0%
-Basic-Product-Update   | James  | 1.0      | 2014-08-29 | 2014-08-29 | 0%
-Basic-Product-Retrieve | Lucy   | 2.0      | 2014-08-27 | 2014-08-28 | 0%
+> ./scheduler.py -e -t /tmp/test.md
+Task                   | Developer  | Man-days | Start Date | End Date   | Progress
+---------------------- | ---------- | -------- | ---------- | ---------- | ----
+Basic-task1            | James      | 2.0      | 2014-08-21 | 2014-08-25 | 100%
+Basic-task2            | Lucy       | 1.0      | 2014-08-21 | 2014-08-21 | 80%
+Basic-task3            | James      | 1.0      | 2014-08-26 | 2014-08-26 | 0%
+Basic-task4            | Lucy       | 2.0      | 2014-08-22 | 2014-08-25 | 0%
+Basic-Product-Create   | James      | 2.0      | 2014-08-27 | 2014-08-28 | 0%
+Basic-Product-Delete   | Lucy       | 1.0      | 2014-08-26 | 2014-08-26 | 0%
+Basic-Product-Update   | James      | 1.0      | 2014-08-29 | 2014-08-29 | 0%
+Basic-Product-Retrieve | Lucy       | 2.0      | 2014-08-27 | 2014-08-28 | 0%
 
->> 总人日: 12.0, 已经完成的人日: 0.00, 完成度: 23.33%
+>> Total mandays: 12.0, Finished mandays: 0.00, Progress: 23.33%
 ```
 
 ## Scheduler UI

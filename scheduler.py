@@ -70,7 +70,7 @@ class Task:
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
 HEADER_PATTERN = "^(#+)(.*)"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
-PROJECT_START_DATE_PATTERN = '项目开始时间\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
+PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
 def skip_weekend(date1):
     weekday = date1.isoweekday()
@@ -161,7 +161,7 @@ def repeat(cnt):
 
     return ret
 
-MAN_LEN = 6
+MAN_LEN = 10
 MAN_DAY_LEN = 8
 START_DATE_LEN = 10
 END_DATE_LEN = 10
@@ -206,9 +206,13 @@ def pretty_print_man_stats(tasks):
         
         print("{}: {:.0f}/{} {:.0f}%".format(man, finished_man_days, total_man_days, total_status))
         
-def pretty_print_scheduled_tasks(project, target_man):
+def pretty_print_scheduled_tasks(project, target_man, english):
     # pretty print the scheduler
-    pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', project.max_task_name_length())
+    if english:
+        pretty_print('Task', 'Developer', 'Man-days', 'Start Date', 'End Date', 'Progress', project.max_task_name_length())
+    else:
+        pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', project.max_task_name_length())
+
     pretty_print_second_line(project.max_task_name_length())
 
     for task in project.tasks:
@@ -216,9 +220,15 @@ def pretty_print_scheduled_tasks(project, target_man):
             pretty_print_task(project, task)
             
     print("")
-    print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(project.total_man_days,
-                                                                         project.cost_man_days,
-                                                                         project.status))
+
+    if english:
+        print(">> Total mandays: {}, Finished mandays: {:.2f}, Progress: {:.2%}".format(project.total_man_days,
+                                                                                        project.cost_man_days,
+                                                                                        project.status))
+    else:
+        print(">> 总人日: {}, 已经完成的人日: {:.2f}, 完成度: {:.2%}".format(project.total_man_days,
+                                                                             project.cost_man_days,
+                                                                             project.status))
     
 def find_max_length_of_tasks(tasks):
     ret = 0
@@ -279,7 +289,7 @@ def parse_vacation_line(vacations, m):
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
 
-def parse(filepath, append_section_title = True):
+def parse(filepath, append_section_title = True, english = False):
     f = codecs.open(filepath, 'r', 'utf-8')    
     s = f.read()
     lines = s.split('\n')
@@ -306,20 +316,20 @@ def parse(filepath, append_section_title = True):
                         parse_header_line(curr_headers, m)
                         
     if not project_start_date:
-        print("请在文件中指定项目开始时间！")
+        print("Please specify the project start date！")
         exit(1)
 
     schedule(tasks)
 
     return Project(project_start_date, tasks, vacations)
     
-def parse_and_print(filepath, append_section_title, target_man, print_man_stats, only_nonstarted):
-    project = parse(filepath, append_section_title)
+def parse_and_print(filepath, append_section_title, target_man, print_man_stats, only_nonstarted, english):
+    project = parse(filepath, append_section_title, english)
     # filter the tasks
     if only_nonstarted:
         project.tasks = [task for task in project.tasks if task.status < 100]
     
-    pretty_print_scheduled_tasks(project, target_man)
+    pretty_print_scheduled_tasks(project, target_man, english)
     if print_man_stats:
         pretty_print_man_stats(project.tasks)
 
@@ -334,7 +344,7 @@ Options:
 """)
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'm:tsn')
+    opts, args = getopt.getopt(sys.argv[1:], 'm:tsne')
     if not args or len(args) != 1:
         help()
         exit(1)
@@ -344,6 +354,7 @@ if __name__ == '__main__':
     append_section_title = False
     print_man_stats = False
     only_nonstarted = False
+    english = False
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-m':
@@ -354,5 +365,7 @@ if __name__ == '__main__':
             print_man_stats = True
         elif opt_name == '-n':
             only_nonstarted = True
+        elif opt_name == '-e':
+            english = True
 
-    parse_and_print(filepath, append_section_title, man, print_man_stats, only_nonstarted)
+    parse_and_print(filepath, append_section_title, man, print_man_stats, only_nonstarted, english)
