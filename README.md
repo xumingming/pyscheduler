@@ -1,7 +1,7 @@
 pyscheduler
 ===========
 
-For english introduction check out:[README_en](README_en)
+For english introduction check out:[README_en](README_en.md)
 
 做项目的时候大家都需要的做的一个事情是排计划安排，一般有两种做法：一是用类`Microsoft Project`的软件，这种软件的优点是功能很强大，缺点是有点重，非文本的，想把它嵌入到比如 markdown 文档里面很难；二是自己用表格的语法直接写在一个 markdown 文件里面。我个人比较喜欢第二种做法，这种做法好处是它是纯文本的，不需要借助任务特殊软件就可以展示。它的缺点是功能比较弱：
 
