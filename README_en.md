@@ -44,7 +44,7 @@ The above file defines that the project starts from `2014-08-21`, and defines th
 
 ```bash
 > ./scheduler.py /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
+Task  | Developer | Man-Days | Start Date | End Date   | Progress
 ----- | ------ | -------- | ---------- | ---------- | ----
 task1 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 0%
 task2 | Lucy   | 1.0      | 2014-08-21 | 2014-08-21 | 0%
@@ -74,7 +74,7 @@ re-run the command, you get a new **updated** plan:
 
 ```bash
 >  ./scheduler.py /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
+Task  | Developer | Man-Days | Start Date | End Date   | Progress
 ----- | ------ | -------- | ---------- | ---------- | ----
 task1 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 100%
 task2 | Lucy   | 1.0      | 2014-08-21 | 2014-08-21 | 80%
@@ -90,7 +90,7 @@ If you want to check out all the tasks assigned to `James`, add a `-m` param:
 
 ```bash
 > ./scheduler.py -m James /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
+Task  | Developer | Man-Days | Start Date | End Date   | Progress
 ----- | ------ | -------- | ---------- | ---------- | ----
 task1 | James  | 2.0      | 2014-08-21 | 2014-08-22 | 100%
 task3 | James  | 1.0      | 2014-08-25 | 2014-08-25 | 0%
@@ -120,7 +120,7 @@ re-run the command again, we get the following plan:
 
 ```bash
 > ./scheduler.py -m James /tmp/test.markdown
-任务  | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
+Task  | Developer | Man-Days | Start Date | End Date   | Progress
 ----- | ------ | -------- | ---------- | ---------- | ----
 task1 | James  | 2.0      | 2014-08-21 | 2014-08-25 | 100%
 task3 | James  | 1.0      | 2014-08-26 | 2014-08-26 | 0%
@@ -156,7 +156,8 @@ re-run the command(with a new option: `-t`) we get:
 
 ```bash
 > ./scheduler.py -t /tmp/test.md
-任务                   | 责任人 | 所需人日 | 开始时间   | 结束时间   | 进度
+
+Task                | Developer | Man-Days | Start Date | End Date   | Progress
 ---------------------- | ------ | -------- | ---------- | ---------- | ----
 Basic-task1            | James  | 2.0      | 2014-08-21 | 2014-08-25 | 100%
 Basic-task2            | Lucy   | 1.0      | 2014-08-21 | 2014-08-21 | 80%
