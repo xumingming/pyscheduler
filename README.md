@@ -11,6 +11,7 @@ pyscheduler
 
 ## 目前我们支持如下几个特性:
 
+* [我们现在有可视化UI了](#scheduler-ui)
 * [对列出来的任务自动进行排期，并以 Markdown Table 的语法进行输出](#usage)
 * [跟踪任务进度](#track-progress)
 * [根据任务负责人对任务进行过滤](#filter-by-people)
@@ -18,8 +19,6 @@ pyscheduler
 * [支持对一个大任务进行拆解](#task-break)
 * [支持显示每个人任务完成情况](#show-all-progress)
 * [显示没有开始的任务](#show-undone-task)
-* [我们现在有可视化UI了](#scheduler-ui)
-
 
 ## Scheduler UI
 

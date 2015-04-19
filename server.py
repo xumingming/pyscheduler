@@ -49,12 +49,6 @@ def filter_tasks(project, options):
 
     project.tasks = tasks
 
-def list_breakdown_files():
-    files = os.listdir("/Users/xumingmingv/local/alipay/xlab.wiki")
-    files = [f for f in files if f.find("breakdown") > 0]
-
-    return files
-    
 @route('/')
 @view('table')
 def index():
@@ -80,7 +74,6 @@ def index():
         man = man
     )
 
-    files = list_breakdown_files()
     project = parse(FILE_PATH)
 
     # filter the tasks acoording to task status
@@ -90,8 +83,7 @@ def index():
     if options.man and not options.man == "All":
         project.tasks = [task for task in project.tasks if task.man == options.man]
 
-    print(files)
-    return dict(project = project, options = options, files = files)
+    return dict(project = project, options = options)
 
 # Static Routes
 @get('/<filename:re:.*\.js>')
