@@ -50,7 +50,7 @@ class Project:
             project_status = cost_man_days / total_man_days
 
         self.total_man_days = total_man_days
-        self.cost_man_days
+        self.cost_man_days = cost_man_days
         self.status = project_status
 
         # init mans
