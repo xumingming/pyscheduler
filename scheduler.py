@@ -75,7 +75,7 @@ class Task:
         self.end_date = None
 
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
-HEADER_PATTERN = "^(#+)(.*)"
+HEADER_PATTERN = "^(#{2,})(.*)"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
 PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
