@@ -1,3 +1,4 @@
+#-*-encoding: utf-8 -*-
 import sys
 import getopt
 import re
@@ -235,9 +236,9 @@ def parse(filepath):
                         parse_header_line(curr_headers, m)
                         
     if not project_start_date:
-        raise "Please specify the project start date！"
+        raise "Please specify the project start date!"
         exit(1)
-
+        
     schedule(tasks)
 
     return Project(project_start_date, tasks, vacations)
