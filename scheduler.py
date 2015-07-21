@@ -7,7 +7,28 @@ import re
 import datetime
 import codecs
 from math import ceil
-from parser import Options, parse, actual_width_str
+from parser import Options, parse
+
+def find_max_length_of_tasks(tasks):
+    ret = 0
+    for task in tasks:
+        if actual_width_str(task.name) > ret:
+            ret = actual_width_str(task.name)
+
+    return ret
+
+def actual_width(ch):
+    if ord(ch) < 256:
+        return 1
+
+    return 2
+
+def actual_width_str(input):
+    ret = 0
+    for ch in input:
+        ret += actual_width(ch)
+
+    return ret
 
 def format_with_width(input, width):
     target = input
@@ -50,7 +71,7 @@ def pretty_print(task_name, man, man_day, start_date, end_date, status, task_nam
 
 def pretty_print_task(project, task):
     pretty_print(task.name, task.man, task.man_day, project.task_start_date(task), 
-                 project.task_end_date(task), str(task.status) + "%", project.max_task_name_length())
+                 project.task_end_date(task), str(task.status) + "%", find_max_length_of_tasks(project.tasks))
 
 def pretty_print_man_stats(tasks):
     man2days = {}
@@ -74,12 +95,13 @@ def pretty_print_man_stats(tasks):
         
 def pretty_print_scheduled_tasks(project, options):
     # pretty print the scheduler
+    max_length_of_tasks = find_max_length_of_tasks(project.tasks)
     if options.english:
-        pretty_print('Task', 'Developer', 'Man-days', 'Start Date', 'End Date', 'Progress', project.max_task_name_length())
+        pretty_print('Task', 'Developer', 'Man-days', 'Start Date', 'End Date', 'Progress', max_length_of_tasks)
     else:
-        pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', project.max_task_name_length())
+        pretty_print('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度', max_length_of_tasks)
 
-    pretty_print_second_line(project.max_task_name_length())
+    pretty_print_second_line(max_length_of_tasks)
 
     for task in project.tasks:
         if not options.man or task.man == options.man:

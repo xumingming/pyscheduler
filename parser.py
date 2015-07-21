@@ -61,27 +61,6 @@ class Project:
     def max_task_name_length(self):
         return find_max_length_of_tasks(self.tasks)
 
-def find_max_length_of_tasks(tasks):
-    ret = 0
-    for task in tasks:
-        if actual_width_str(task.name) > ret:
-            ret = actual_width_str(task.name)
-
-    return ret
-
-def actual_width(ch):
-    if ord(ch) < 256:
-        return 1
-
-    return 2
-
-def actual_width_str(input):
-    ret = 0
-    for ch in input:
-        ret += actual_width(ch)
-
-    return ret
-
 class Task:
     def __init__(self, name, man_day, man, status=0):
         """
