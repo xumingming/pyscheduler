@@ -6,6 +6,10 @@ import datetime
 import codecs
 from math import ceil
 
+TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
+HEADER_PATTERN = "^(#{2,})(.*)"
+VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
+PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
 class Options:
     def __init__(self):
@@ -93,11 +97,6 @@ class Task:
         self.start_point = None
         self.start_date = None
         self.end_date = None
-
-TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
-HEADER_PATTERN = "^(#{2,})(.*)"
-VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
-PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
 def skip_weekend(date1):
     weekday = date1.isoweekday()
@@ -219,21 +218,29 @@ def parse(filepath):
     project_start_date = None
     curr_headers = []
     for line in lines:
+        
+        # parse task line
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
             parse_task_line(tasks, curr_headers, m)
-        else:
-            m = re.search(VACATION_PATTERN, line)
-            if m:
-                parse_vacation_line(vacations, m)
-            else:
-                m = re.search(PROJECT_START_DATE_PATTERN, line)
-                if m and m.group(1):
-                    project_start_date = parse_date(m.group(1).strip())
-                else:
-                    m = re.search(HEADER_PATTERN, line)
-                    if m:
-                        parse_header_line(curr_headers, m)
+            continue
+
+        # parse vacation line
+        m = re.search(VACATION_PATTERN, line)
+        if m:
+            parse_vacation_line(vacations, m)
+            continue
+
+        # parse project_start_date line
+        m = re.search(PROJECT_START_DATE_PATTERN, line)
+        if m and m.group(1):
+            project_start_date = parse_date(m.group(1).strip())
+            continue
+
+        # parse header line
+        m = re.search(HEADER_PATTERN, line)
+        if m:
+            parse_header_line(curr_headers, m)
                         
     if not project_start_date:
         raise "Please specify the project start date!"
