@@ -171,16 +171,5 @@ Basic-Product-Retrieve | Lucy       | 2.0      | 2014-08-27 | 2014-08-28 | 0%
 >> Total mandays: 12.0, Finished mandays: 0.00, Progress: 23.33%
 ```
 
-## Scheduler UI
-
-Although our command line scheduler can auto-schedule plans, but sometimes we want to do some analysis on our project, e.g. 「Which tasks has not began?」, 「Which tasks are overdue?」, 「What is the progress of XXX?」, when these kinds of questions pops up, it is different to analyze these with command line tools, so recently I developped a visuallized web pages, as a complement to the command line, usage:
-
-    # Scheduler-UI relies on the python bottle library
-    pip install bottle
-    python server.py <path-to-your-breakdown-file>
-
-***Currently the web page is very simple and ugly, if anyone has talent on web pages, welcome to beautify it***
-![](scheduler-ui.png)
-
 There is more features, try it yourself!
 
