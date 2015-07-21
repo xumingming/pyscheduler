@@ -3,11 +3,8 @@
 
 import sys
 import getopt
-import re
-import datetime
+import parser
 import codecs
-from math import ceil
-from parser import Options, parse
 
 def find_max_length_of_tasks(tasks):
     ret = 0
@@ -120,7 +117,11 @@ def pretty_print_scheduled_tasks(project, options):
     
     
 def parse_and_print(filepath, options):
-    project = parse(filepath)
+    f = codecs.open(filepath, 'r', 'utf-8')
+    content = f.read()
+    f.close()
+    
+    project = parser.parse(content)
     # filter the tasks
     if options.only_nonstarted:
         project.tasks = [task for task in project.tasks if task.status < 100]
@@ -148,7 +149,7 @@ if __name__ == '__main__':
     filepath = args[0]
     man = None
 
-    options = Options()
+    options = parser.Options()
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-m':

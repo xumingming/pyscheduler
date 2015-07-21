@@ -1,9 +1,7 @@
 #-*-encoding: utf-8 -*-
 import sys
-import getopt
 import re
 import datetime
-import codecs
 from math import ceil
 
 TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
@@ -187,10 +185,8 @@ def parse_vacation_line(vacations, m):
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
 
-def parse(filepath):
-    f = codecs.open(filepath, 'r', 'utf-8')    
-    s = f.read()
-    lines = s.split('\n')
+def parse(content):
+    lines = content.split('\n')
     tasks = []
     vacations = {}
 
