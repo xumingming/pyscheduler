@@ -22,17 +22,6 @@ For english introduction check out:[README_en](README_en.md)
 * [支持显示每个人任务完成情况](#show-all-progress)
 * [显示没有开始的任务](#show-undone-task)
 
-## Scheduler UI
-
-虽然说我们的 Scheduler 可以排出非常工整的计划安排，但是有时候我们想对计划的执行情况进行分析，比如「哪些任务还没有开始？」，「哪些任务已经落后于进度了？」、「XXX 这个人的进度怎么样？」，这时候利用命令行其实是比较难的、不是非常直观，因此最近我又开发了一个响应的可视化页面，可以把他看做命令行的一个补充, 用法:
-
-    # scheduler UI 使用了 python 的 bottle 库
-    pip install bottle
-    python server.py <path-to-your-breakdown-file>
-
-***目前这个页面还是朴素的，有页面功夫比较厉害的，欢迎把它美化美化***
-![](scheduler-ui.png)
-
 ## Scheduler 命令行用法
 
 ### 基本用法
