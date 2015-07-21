@@ -54,11 +54,6 @@ class Project:
         self.cost_man_days = cost_man_days
         self.status = project_status
 
-        # init mans
-        
-    def max_task_name_length(self):
-        return find_max_length_of_tasks(self.tasks)
-
 class Task:
     def __init__(self, name, man_day, man, status=0):
         """
